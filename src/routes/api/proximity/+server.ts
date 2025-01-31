@@ -1,6 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
-import { agencies } from '$lib/data/agencies';
 import 'dotenv/config';
 
 const MAPS_API_KEY = process.env.MAPS_API_KEY as string;
@@ -24,10 +23,10 @@ async function calculateTravelTime(origin: string, destination: string): Promise
 
 export async function POST({ request }: RequestEvent) {
     try {
-        const { hospitalAddress } = await request.json();
+        const { hospitalAddress, agencies } = await request.json();
         const nearbyAgencies: string[] = [];
 
-        const travelTimePromises = agencies.map(agency =>
+        const travelTimePromises = agencies.map((agency: { name: string, address: string }) =>
             calculateTravelTime(hospitalAddress, agency.address)
                 .then(travelTime => ({
                     name: agency.name,
